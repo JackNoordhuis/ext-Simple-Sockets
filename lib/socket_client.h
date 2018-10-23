@@ -33,16 +33,18 @@ public:
     /**
      * @throws Relevant error if unsuccessful
      *
-     * @return Payload struct containing number of bytes read and the bytes
+     * @return String containing bytes read
      */
     std::string read();
 
     /**
      * Writes the specified payload to the socket
      *
+     * @param bytes Bytes to write
+     *
      * @throws Relevant error if unsuccessful
      */
-    void write(std::string);
+    void write(std::string payload);
 
     /**
      * Disallow reading and/or writing to the socket (also stops incoming connections).
