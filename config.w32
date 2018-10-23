@@ -1,0 +1,20 @@
+// $Id$
+// vim:ft=javascript
+
+ARG_ENABLE("socket-server", "Enable Socket Server extension", "no");
+
+if (PHP_SOCKET_SERVER != "no") {
+	EXTENSION("socket_server", socket_server.cpp", PHP_SOCKET_SERVER_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 /I" + configure_module_dirname);
+	ADD_FLAG("CFLAGS_SOCKET_SERVER", "/EHsc");
+	ADD_SOURCES(
+		configure_module_dirname + "/src",
+		"PhpSocketServer.cpp PhpSocketClient.cpp",
+		"socket_server"
+	);
+	ADD_SOURCES(
+		configure_module_dirname + "/lib",
+		"socket_server.cpp socket_client.cpp",
+		"socket_server"
+	);
+}
+
