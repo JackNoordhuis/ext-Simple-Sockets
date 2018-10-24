@@ -18,6 +18,10 @@ class SocketServer{
 
 	public function select() : \jacknoordhuis\socketserver\SocketClient{}
 
+	public function read_from(int $bytes, &$address, &$port) : string{}
+
+	public function send_to(string $bytes, string $address, int $port) : string{}
+
 	public function shutdown(int $how) : void{}
 
 	public function close() : void{}

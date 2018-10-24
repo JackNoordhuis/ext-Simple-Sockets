@@ -73,7 +73,7 @@ PHP_METHOD(PhpSocketClient, write) {
     zend_string *bytes;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
-            Z_PARAM_STR(bytes)
+        Z_PARAM_STR(bytes)
     ZEND_PARSE_PARAMETERS_END();
 
     socket_client_obj *intern = fetch_from_zend_object<socket_client_obj>(Z_OBJ_P(getThis()));//NOLINT
@@ -86,7 +86,7 @@ PHP_METHOD(PhpSocketClient, write) {
 }
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_SocketClient_shutdown, 0, 1, IS_VOID, 0)
-                ZEND_ARG_TYPE_INFO(0, how, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, how, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 PHP_METHOD(PhpSocketClient, shutdown) {

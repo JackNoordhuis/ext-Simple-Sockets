@@ -81,6 +81,40 @@ SocketClient* SocketServer::select() {
     return accept();
 }
 
+std::string SocketServer::read_from(int bytes, std::string &address, unsigned short &port) {
+    char buf[bytes];
+    struct sockaddr_in addr;
+    unsigned int addr_len = sizeof(addr);
+
+    ssize_t data = recvfrom(_sockfd, &buf, (size_t)sizeof(buf), 0, (struct sockaddr *)&addr, &addr_len);
+
+    if(data < 0) { //error
+        throw socket_server::errno_runtime(socket_server::errors::UNABLE_TO_READ);
+    }
+
+    address = inet_ntoa(addr.sin_addr);
+    port = ntohs(addr.sin_port);
+
+    return std::string(reinterpret_cast<char const*>(buf), (unsigned long)data);
+}
+
+void SocketServer::send_to(std::string payload, const char *address, unsigned short port) {
+    char buf[payload.length()];
+    struct sockaddr_in addr;
+
+    std::strcpy(buf, payload.c_str());
+
+    addr.sin_family = _addr.sin_family;
+    addr.sin_port = htons(port);
+    if(inet_aton(address, &addr.sin_addr) == 0) {
+        throw socket_server::string_runtime(socket_server::errors::UNABLE_TO_RESOLVE_ADDRESS);
+    }
+
+    if(sendto(_sockfd, &buf, (size_t)sizeof(buf), 0, (struct sockaddr *)&addr, (socklen_t)sizeof(addr)) < 0) {
+        throw socket_server::errno_runtime(socket_server::errors::UNABLE_TO_WRITE);
+    }
+}
+
 void SocketServer::shutdown(int how) {
     if(how == SHUT_RD and !_accept_reads) { // check if we're attempting to disable reads and the're already disabled
         throw socket_server::string_runtime(socket_server::errors::SHUTDOWN_DISABLE_DISABLED_READS);

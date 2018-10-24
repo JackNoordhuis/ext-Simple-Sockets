@@ -17,6 +17,8 @@ PHP_METHOD(PhpSocketServer, bind);
 PHP_METHOD(PhpSocketServer, listen);
 PHP_METHOD(PhpSocketServer, accept);
 PHP_METHOD(PhpSocketServer, select);
+PHP_METHOD(PhpSocketServer, read_from);
+PHP_METHOD(PhpSocketServer, send_to);
 PHP_METHOD(PhpSocketServer, shutdown);
 PHP_METHOD(PhpSocketServer, close);
 PHP_METHOD(PhpSocketServer, closed);

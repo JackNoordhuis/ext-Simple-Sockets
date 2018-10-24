@@ -21,6 +21,8 @@ namespace socket_server {
         const std::string UNABLE_TO_LISTEN_TO_SOCKET = "Unable to listen to socket: [%1%] %2%";
         const std::string UNABLE_TO_ACCEPT = "Unable to accept from socket: [%1%] %2%";
         const std::string UNABLE_TO_SELECT = "Unable to select from socket: [%1%] %2%";
+        const std::string UNABLE_TO_READ = "Unable to read from socket: [%1%] %2%";
+        const std::string UNABLE_TO_WRITE = "Unable to send to: [%1%] %2%";
         const std::string SHUTDOWN_DISABLE_DISABLED_READS = "Attempted to disable reads when they're already disabled!";
         const std::string SHUTDOWN_DISABLE_DISABLED_WRITES = "Attempted to disable writes when they're already disabled!";
         const std::string SHUTDOWN_DISABLE_READS_WRITES_DISABLED_READS_WRITES = "Attempted to disable reads and writes when reads and writes are both already disabled!";

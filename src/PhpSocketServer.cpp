@@ -11,6 +11,7 @@
 extern "C" {
 #include "php.h"
 #include "Zend/zend_exceptions.h"
+#include "Zend/zend_smart_str.h"
 #include "ext/spl/spl_exceptions.h"
 }
 
@@ -62,7 +63,7 @@ PHP_METHOD(PhpSocketServer, __construct) {
 
     socket_server_obj *intern = fetch_from_zend_object<socket_server_obj>(Z_OBJ_P(getThis()));//NOLINT
     try {
-        intern->container = new SocketServer((int)domain, (int)type, (int)protocol, (const char *)&address->val[0], (unsigned short)port);
+        intern->container = new SocketServer((int)domain, (int)type, (int)protocol, ZSTR_VAL(address), (unsigned short)port);
     } catch(std::exception &e) {
         zend_throw_exception_ex(spl_ce_RuntimeException, 0, e.what());
     }
@@ -173,6 +174,66 @@ PHP_METHOD(PhpSocketServer, select) {
     client_intern->container = client;
 }
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_SocketServer_read_from, 0, 3, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, bytes, IS_LONG, 0)
+    ZEND_ARG_INFO(1, address)
+    ZEND_ARG_INFO(1, port)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(PhpSocketServer, read_from) {
+    zend_long bytes;
+    zval *address, *port = NULL;
+
+    if (zend_parse_parameters_ex(ZEND_PARSE_PARAMS_THROW, ZEND_NUM_ARGS() TSRMLS_CC, "lz/z/", &bytes, &address, &port) == FAILURE)
+    {
+        return;
+    }
+
+    socket_server_obj *intern = fetch_from_zend_object<socket_server_obj>(Z_OBJ_P(getThis()));//NOLINT
+
+    std::string addr;
+    unsigned short por;
+
+    try {
+        RETVAL_STRING(intern->container->read_from((int)bytes, addr, por).c_str());
+    } catch(std::exception &e) {
+        zend_throw_exception_ex(spl_ce_RuntimeException, 0, e.what());
+        return;
+    }
+
+    zval_ptr_dtor(address);
+    zval_ptr_dtor(port);
+
+    ZVAL_STRING(address, addr.c_str());
+    ZVAL_LONG(port, por);
+}
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_SocketServer_send_to, 0, 3, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, bytes, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, address, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, port, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_METHOD(PhpSocketServer, send_to) {
+    zend_string *bytes, *address;
+    zend_long port;
+
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
+        Z_PARAM_STR(bytes)
+        Z_PARAM_STR(address)
+        Z_PARAM_LONG(port)
+    ZEND_PARSE_PARAMETERS_END();
+
+    socket_server_obj *intern = fetch_from_zend_object<socket_server_obj>(Z_OBJ_P(getThis()));//NOLINT
+
+    try {
+        intern->container->send_to((const char *)&bytes->val[0], (const char *)&address->val[0], (unsigned short)port);
+    } catch(std::exception &e) {
+        zend_throw_exception_ex(spl_ce_RuntimeException, 0, e.what());
+        return;
+    }
+}
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_SocketServer_shutdown, 0, 1, IS_VOID, 0)
     ZEND_ARG_TYPE_INFO(0, how, IS_LONG, 0)
 ZEND_END_ARG_INFO()
@@ -248,6 +309,8 @@ zend_function_entry socket_server_class_methods[] = {
         PHP_ME(PhpSocketServer, listen, arginfo_SocketServer_listen, ZEND_ACC_PUBLIC)
         PHP_ME(PhpSocketServer, accept, arginfo_SocketServer_accept, ZEND_ACC_PUBLIC)
         PHP_ME(PhpSocketServer, select, arginfo_SocketServer_select, ZEND_ACC_PUBLIC)
+        PHP_ME(PhpSocketServer, read_from, arginfo_SocketServer_read_from, ZEND_ACC_PUBLIC)
+        PHP_ME(PhpSocketServer, send_to, arginfo_SocketServer_send_to, ZEND_ACC_PUBLIC)
         PHP_ME(PhpSocketServer, shutdown, arginfo_SocketServer_shutdown, ZEND_ACC_PUBLIC)
         PHP_ME(PhpSocketServer, close, arginfo_SocketServer_close, ZEND_ACC_PUBLIC)
         PHP_ME(PhpSocketServer, closed, arginfo_SocketServer_closed, ZEND_ACC_PUBLIC)

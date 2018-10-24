@@ -86,6 +86,26 @@ public:
     SocketClient* select();
 
     /**
+     * Reads the specified number of bytes from the socket.
+     *
+     * @param bytes The number of bytes to read
+     * @param address Address read from
+     * @param port Port read from
+     *
+     * @return String containing bytes read
+     */
+    std::string read_from(int bytes, std::string &address, unsigned short &port);
+
+    /**
+     * Writes the provided payload to the provided address and port.
+     *
+     * @param payload The bytes to send
+     * @param address The address to send to
+     * @param port The port to send on
+     */
+    void send_to(std::string payload, const char *address, unsigned short port);
+
+    /**
      * Disallow reading and/or writing to the socket (also stops incoming connections).
      *
      * @param how Disallow reading (also stops incoming connections) and/or writing to the socket
